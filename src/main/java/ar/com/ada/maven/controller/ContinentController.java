@@ -73,13 +73,14 @@ public class ContinentController {
         return pages;
     }
 
-    private static void continentListPerPage(){
+    private static int continentListPerPage(){
         int limit = 3, currentPage = 0;
         List<ContinentDTO> continents;
         int numberContinents;
         int totalPages;
         List<String> paginator;
-        while (true){
+        boolean shouldGetOut = false;
+        while (!shouldGetOut){
             continents = continentDAO.findAll(limit, currentPage * limit);
             numberContinents = continentDAO.getTotalContinents();
             System.out.println("Cantidad de registros " + numberContinents);
@@ -91,8 +92,7 @@ public class ContinentController {
                     currentPage = 0;
                     break;
                 case "a": case "A":
-                    if (currentPage + 1 > 0)
-                        currentPage--;
+                    if (currentPage > 0) currentPage--;
                     break;
                 case "s": case "S":
                     if (currentPage + 1 < totalPages)
@@ -102,15 +102,50 @@ public class ContinentController {
                     currentPage = totalPages - 1;
                     break;
                 case "e": case "E":
-                    currentPage = totalPages + 1;
+                    return view.continentIdSelected("Editar");
+                    break;
+                case "q": case "Q":
+                    shouldGetOut = true;
                     break;
                 default:
+                    if (choice.matches("-?\\d+$")) {
+                        int page = Integer.parseInt(choice);
+                        if (page > 0 && page <= totalPages) currentPage = page - 1;
+                    } else System.out.println("ERROR :: Debe ingresar una opcion valida del paginador");
             }
         }
     }
 
     private static void editContinent(){
-        continentListPerPage();
+        int continentIdToEdith = continentListPerPage();
+        if (continentIdToEdith != 0)
+            editSelectedContinent(continentIdToEdith);
+        else
+            view.updateContinentCancelled();
+    }
+
+    private static void editSelectedContinent(int id){
+        ContinentDTO continent = continentDAO.findById(id);
+        if (continent != null) {
+            String nameToUpdate = view.getNameToUpdate(continent);
+            if (!nameToUpdate.isEmpty()){
+                continentDAO.findByName(nameToUpdate);
+                continent.setName(nameToUpdate);
+
+                Boolean isSaved = continentDAO.update(continent, id);
+                if (isSaved)
+                    view.showUpdateContinent(continent.getName());
+
+            } else
+                view.updateContinentCancelled();
+        } else {
+            view.continentNotExist(id);
+            int continentIdSelected = view.continentIdSelected("Editar");
+            if (continentIdSelected != 0)
+                editSelectedContinent(continentIdSelected);
+            else
+                view.updateContinentCancelled();
+        }
     }
 }
 

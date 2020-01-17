@@ -10,8 +10,8 @@ import static ar.com.ada.maven.utils.ScannerSingleton.keyboard;
 public class MainView {
     public int selectOption(){
 
-        System.out.println("My App Maven");
-        System.out.println("Selecciones una opcion: \n 1.continente \n 2.salir");
+        System.out.println("Welcome to My App Maven");
+        System.out.println("Selecciones una opcion: \n 1.Continente \n 2.Salir");
 
         Scanner key = ScannerSingleton.getInstance();
 

@@ -1,7 +1,9 @@
 package ar.com.ada.maven.view;
 
 import ar.com.ada.maven.model.dto.ContinentDTO;
+import ar.com.ada.maven.utils.Ansi;
 import ar.com.ada.maven.utils.ScannerSingleton;
+
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -10,8 +12,8 @@ import java.util.Scanner;
 
 public class ContinentView {
     public int continentMenuSelectOption(){
-        System.out.println("Modulo Continente ");
-        System.out.println("Seleccione una opcion: \n 1.lista \n 2.agregar \n 3.editar \n 4.eliminar \n 5.salir");
+        System.out.println("Zoo World App :: Modulo Continente ");
+        System.out.println("Seleccione una opcion: \n 1.Lista \n 2.Agregar \n 3.Editar \n 4.Eliminar \n 5.Salir");
 
         Scanner key = ScannerSingleton.getInstance();
 
@@ -27,7 +29,7 @@ public class ContinentView {
         }
     }
     public void printAllContinents(List<ContinentDTO> continents){
-        System.out.println("Listado de continente");
+        System.out.println("Listado de continentes");
         continents.forEach(continent -> {
             String contName = continent.getName();
             int contId = continent.getId();
@@ -38,7 +40,7 @@ public class ContinentView {
 
     public String getNameNewContinent(){
         System.out.println("Este es un formulario para crear un continente");
-        System.out.println("Ingresar el nombre (si deja el texto vacio, se cancela el proceso de guardado): ");
+        System.out.println("Ingresar el nombre \n(si deja el texto vacio, se cancela el proceso de guardado) \n");
 
         Scanner key = ScannerSingleton.getInstance();
  //       key.nextLine();
@@ -46,7 +48,7 @@ public class ContinentView {
             try {
                 String name = key.nextLine().trim();
                 while (!name.matches("[A-Za-záéíóúüÁÉÍÓÚÜ\\s]+$") && !name.isEmpty()){
-                    System.out.println("ERRO :: Debe ingresar un dato valido");
+                    System.out.println("ERROR :: Debe ingresar un dato valido");
                     name = key.nextLine();
                 }
                 return name;
@@ -104,4 +106,61 @@ public class ContinentView {
         }
     }
 
+    public int continentIdSelected(String action){
+        System.out.println("Ingrese el numero de ID del continente para " + action + " o 0 para cancelar: \n");
+
+        Scanner key = ScannerSingleton.getInstance();
+
+        while (true){
+            try {
+                System.out.println("? ");
+                int choice = key.nextInt();
+                return choice;
+            } catch (InputMismatchException e){
+                System.out.println("ERROR :: Debe ingresar un ID valido");
+                key.next();
+            }
+        }
+    }
+
+    public static String getNameToUpdate(ContinentDTO continent){
+        System.out.print("Se actualizara el nombre del siguiente continente : ");
+        System.out.println(Ansi.PURPLE + continent.getId() + "\t" + continent.getName() + Ansi.RESET);
+
+        System.out.println("Ingrese el nombre del continente para actualizar ");
+        System.out.println("(para cancelar no ingrese nada y presione ENTER):\n");
+
+        Scanner key = ScannerSingleton.getInstance();
+        key.nextLine();
+
+        while (true){
+            try {
+                System.out.println("? ");
+                String name = key.nextLine().trim();
+                while (!name.matches("^[A-Za-záéíóúüÁÉÍÓÚÜ\\s]+$") && !name.isEmpty()) {
+                    System.out.println("ERROR :: Debe ingresar un dato valido");
+                    name = key.nextLine();
+                }
+                return name;
+            } catch (InputMismatchException e){
+                System.out.println("ERROR :: Debe ingresar un dato valido");
+                key.next();
+            }
+        }
+    }
+
+    public void continentNotExist(int id){
+        System.out.println("No existe el continente con el ID " + id + " asociado");
+        System.out.println("Seleccione un ID valido o 0 para cancelar");
+    }
+
+    public void updateContinentCancelled(){
+        System.out.println("Ha cancelado la actualizacion del continente");
+        ScannerSingleton.pressEnterKeyToContinue();
+    }
+
+    public void showUpdateContinent(String name){
+        System.out.println("El continente " + name + " se ha actualizado exitosamente");
+        ScannerSingleton.pressEnterKeyToContinue();
+    }
 }
